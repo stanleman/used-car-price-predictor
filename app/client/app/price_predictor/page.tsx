@@ -281,7 +281,7 @@ export default function Home() {
                       : (Number(selectedKey) as keyof typeof encodedOptions),
                 }));
               }}
-              className="mt-1 rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+              className="mt-1 rounded-lg w-full p-2.5 bg-slate-900/50 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Choose an option</option>
               {Object.entries(encodedOptions).map(([key, value]) => (
@@ -314,7 +314,7 @@ export default function Home() {
                 [`feature-${i}`]: value,
               }));
             }}
-            className="mt-1 rounded-lg w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 rounded-lg w-full p-2.5 bg-slate-900/50 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
       );
@@ -412,7 +412,7 @@ export default function Home() {
 
         <button
           onClick={exampleOne}
-          className="py-2 px-4 flex items-center rounded transition bg-slate-500 border border-white text-white hover:bg-gray-600"
+          className="py-2 px-4 flex items-center rounded transition border border-neutral-400 text-neutral-400 hover:text-white hover:border-white bg-transparent hover:bg-slate-500/5"
         >
           <img src="bmw.png" className="h-5 w-5 mr-2" />
           2021 BMW 530e
@@ -420,7 +420,7 @@ export default function Home() {
 
         <button
           onClick={exampleTwo}
-          className="py-2 px-4 flex items-center rounded transition bg-slate-500 border border-white text-white hover:bg-gray-600"
+          className="py-2 px-4 flex items-center rounded transition border border-neutral-400 text-neutral-400 hover:text-white hover:border-white bg-transparent hover:bg-slate-500/5"
         >
           <img src="honda.png" className="h-5 w-5 mr-2" />
           2020 Honda Jazz
@@ -439,7 +439,7 @@ export default function Home() {
               className={`mt-4 w-full py-2 rounded transition font-bold ${
                 checkFeaturesEmpty()
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-indigo-600 text-white hover:bg-indigo-900"
+                  : "bg-blue-600 text-white hover:bg-blue-900"
               }`}
             >
               Predict Price
