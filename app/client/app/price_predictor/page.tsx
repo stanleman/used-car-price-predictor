@@ -438,7 +438,7 @@ export default function Home() {
               onClick={handlePredict}
               className={`mt-4 w-full py-2 rounded transition font-bold ${
                 checkFeaturesEmpty()
-                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ? "bg-neutral-400 text-neutral-500 cursor-not-allowed"
                   : "bg-blue-600 text-white hover:bg-blue-900"
               }`}
             >

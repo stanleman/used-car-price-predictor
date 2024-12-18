@@ -1,5 +1,8 @@
 import React from "react";
 import LineChart from "../components/LineChart.js";
+import AreaChart from "../components/AreaChart.js";
+import BarChart from "../components/BarChart.js";
+import RadialChart from "../components/RadialChart.js";
 
 export default function Visualization() {
   return (
@@ -8,6 +11,20 @@ export default function Visualization() {
         <GridItem title="Average Price vs Year">
           <LineChart />
         </GridItem>
+
+        <GridItem title="Average Price vs Engine CC">
+          <AreaChart />
+        </GridItem>
+
+        <GridItem title="Manufacturer Count">
+          <BarChart />
+        </GridItem>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <GridItem title="Honda Car Colors">
+            <RadialChart />
+          </GridItem>
+        </div>
       </div>
     </main>
   );

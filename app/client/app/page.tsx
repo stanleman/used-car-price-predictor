@@ -40,12 +40,12 @@ export default function Home() {
             <Button
               variant="outline"
               size="icon"
-              className="bg-indigo-600 hover:bg-indigo-800"
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:scale-110 opacity-75 hover:opacity-100 transition duration-200"
             >
               <Info className="h-6 w-6 text-white" />
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px] !bg-white/85">
+          <DialogContent className="sm:max-w-[600px] !bg-white/90">
             <DialogHeader>
               <DialogTitle>Problem Statement</DialogTitle>
               <DialogDescription>
