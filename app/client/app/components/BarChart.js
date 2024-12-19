@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Papa from "papaparse";
 import {
   BarChart,
@@ -12,9 +12,20 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useCurrentPng } from "recharts-to-png";
+import { saveAs } from "file-saver";
 
 const BarChartComponent = () => {
   const [chartData, setChartData] = useState([]);
+  const [getPng, { ref, isLoading }] = useCurrentPng();
+
+  const handleDownload = useCallback(async () => {
+    const png = await getPng();
+
+    if (png) {
+      saveAs(png, "AvgPriceVsManufacturer.png");
+    }
+  }, [getPng]);
 
   useEffect(() => {
     const fetchCSV = async () => {
@@ -89,12 +100,13 @@ const BarChartComponent = () => {
   };
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="87%">
       <BarChart
         data={chartData}
         margin={{
           right: 30,
         }}
+        ref={ref}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
@@ -109,6 +121,14 @@ const BarChartComponent = () => {
           fill="#8884d8"
         />
       </BarChart>
+      <div className="w-full flex justify-end">
+        <button
+          className="font-medium text-sm px-3 py-1  mb-5 bg-gray-600 hover:bg-gray-700 text-gray-400"
+          onClick={handleDownload}
+        >
+          {isLoading ? "Downloading..." : "Export Chart"}
+        </button>
+      </div>
     </ResponsiveContainer>
   );
 };

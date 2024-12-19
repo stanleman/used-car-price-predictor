@@ -1,11 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Papa from "papaparse";
 import { PieChart, Pie, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { useCurrentPng } from "recharts-to-png";
+import { saveAs } from "file-saver";
 
 const PieChartComponent = () => {
   const [chartData, setChartData] = useState([]);
+
+  const [getPng, { ref, isLoading }] = useCurrentPng();
+  const handleDownload = useCallback(async () => {
+    const png = await getPng();
+
+    if (png) {
+      saveAs(png, "FuelTypeDist.png");
+    }
+  }, [getPng]);
 
   const colorMapping = {
     "petrol - unleaded (ulp)": "#8884D8",
@@ -87,9 +98,9 @@ const PieChartComponent = () => {
   };
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-[85%]">
       <ResponsiveContainer>
-        <PieChart>
+        <PieChart ref={ref}>
           <Pie
             data={chartData}
             dataKey="count"
@@ -97,11 +108,19 @@ const PieChartComponent = () => {
             cx="50%"
             cy="50%"
             innerRadius="45%"
-            outerRadius="90%"
+            outerRadius="100%"
           />
           <Tooltip content={<CustomTooltip />} />
         </PieChart>
       </ResponsiveContainer>
+      <div className="w-full flex justify-end">
+        <button
+          className="font-medium text-sm px-3 py-1  mb-5 bg-gray-600 hover:bg-gray-700 text-gray-400"
+          onClick={handleDownload}
+        >
+          {isLoading ? "Downloading..." : "Export Chart"}
+        </button>
+      </div>
     </div>
   );
 };

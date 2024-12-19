@@ -7,18 +7,18 @@ import PieChart from "../components/PieChart.js";
 
 export default function Visualization() {
   return (
-    <main className="flex flex-col items-center justify-center px-4 md:px-8 xl:px-10 ">
+    <main className="flex flex-col items-center justify-center px-4 md:px-8 xl:px-10 pb-5">
       <div className="grid grid-cols-1 w-full gap-10 max-w-[1400px]">
-        <div className="flex flex-col items-center justify-center p-4 !pt-0 pb-12 border border-slate-900 bg-slate-900/50 rounded-xl h-[500px]">
+        <div className="flex flex-col items-center justify-center p-4 !pt-0 pb-20 border border-slate-900 bg-slate-900/50 rounded-xl h-[500px]">
           <h3 className="text-2xl font-semibold text-white mb-4">
             Average Price vs Year
           </h3>
           <LineChart />
         </div>
 
-        <div className="flex flex-col items-center justify-center p-4 !pt-0 pb-12 border border-slate-900 bg-slate-900/50 rounded-xl h-[500px]">
+        <div className="flex flex-col items-center justify-center p-4 !pt-0 pb-20 border border-slate-900 bg-slate-900/50 rounded-xl h-[500px]">
           <h3 className="text-2xl font-semibold text-white mb-4">
-            Average Price vs Year
+            Average Price vs Engine CC
           </h3>
           <AreaChart />
         </div>
@@ -43,7 +43,7 @@ export default function Visualization() {
 
 function GridItem({ title, children }: any) {
   return (
-    <div className="flex flex-col items-center justify-center p-4 border border-slate-900 bg-slate-900/50 rounded-xl h-[500px]">
+    <div className="flex flex-col items-center justify-center p-4 pb-10 border border-slate-900 bg-slate-900/50 rounded-xl h-[500px]">
       <h3 className="text-2xl font-semibold text-white mb-4">{title}</h3>
       {children}
     </div>

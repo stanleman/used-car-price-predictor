@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Papa from "papaparse";
 import {
   RadialBarChart,
@@ -9,9 +9,20 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { useCurrentPng } from "recharts-to-png";
+import { saveAs } from "file-saver";
 
 const RadialChartComponent = () => {
   const [chartData, setChartData] = useState([]);
+
+  const [getPng, { ref, isLoading }] = useCurrentPng();
+  const handleDownload = useCallback(async () => {
+    const png = await getPng();
+
+    if (png) {
+      saveAs(png, "ColorPriceDist.png");
+    }
+  }, [getPng]);
 
   useEffect(() => {
     const fetchCSV = async () => {
@@ -99,15 +110,16 @@ const RadialChartComponent = () => {
   };
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-[85%]">
       <ResponsiveContainer>
         <RadialBarChart
           cx="50%"
           cy="50%"
           innerRadius="5%"
-          outerRadius="90%"
+          outerRadius="100%"
           barSize={20}
           data={chartData}
+          ref={ref}
         >
           <RadialBar
             minAngle={15}
@@ -116,14 +128,16 @@ const RadialChartComponent = () => {
             dataKey="totalPrice"
           />
           <Tooltip content={<CustomTooltip />} />
-          {/* <Legend
-            iconSize={10}
-            layout="vertical"
-            verticalAlign="middle"
-            wrapperStyle={style}
-          /> */}
         </RadialBarChart>
       </ResponsiveContainer>
+      <div className="w-full flex justify-end">
+        <button
+          className="font-medium text-sm px-3 py-1  mb-5 bg-gray-600 hover:bg-gray-700 text-gray-400"
+          onClick={handleDownload}
+        >
+          {isLoading ? "Downloading..." : "Export Chart"}
+        </button>
+      </div>
     </div>
   );
 };

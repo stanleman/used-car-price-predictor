@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Papa from "papaparse";
 import {
   AreaChart,
@@ -12,10 +12,22 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useCurrentPng } from "recharts-to-png";
+import { saveAs } from "file-saver";
 
 const AreaChartComponent = () => {
   const [chartData, setChartData] = useState([]);
   const [filter, setFilter] = useState("all");
+
+  const [getPng, { ref, isLoading }] = useCurrentPng();
+
+  const handleDownload = useCallback(async () => {
+    const png = await getPng();
+
+    if (png) {
+      saveAs(png, "AvgPriceVsEngineCC.png");
+    }
+  }, [getPng]);
 
   useEffect(() => {
     const fetchCSV = async () => {
@@ -147,6 +159,7 @@ const AreaChartComponent = () => {
         margin={{
           right: 30,
         }}
+        ref={ref}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
@@ -155,6 +168,14 @@ const AreaChartComponent = () => {
         <Legend />
         <Area type="monotone" dataKey="price" stroke="#3b82f6" fill="#8884d8" />
       </AreaChart>
+      <div className="w-full flex justify-end">
+        <button
+          className="font-medium text-sm px-3 py-1  mb-5 bg-gray-600 hover:bg-gray-700 text-gray-400"
+          onClick={handleDownload}
+        >
+          {isLoading ? "Downloading..." : "Export Chart"}
+        </button>
+      </div>
     </ResponsiveContainer>
   );
 };

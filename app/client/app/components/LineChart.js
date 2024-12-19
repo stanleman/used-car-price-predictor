@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Papa from "papaparse";
 import {
   LineChart,
@@ -12,10 +12,23 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useCurrentPng } from "recharts-to-png";
+import { saveAs } from "file-saver";
 
 const LineChartComponent = () => {
   const [chartData, setChartData] = useState([]);
   const [filter, setFilter] = useState("all");
+
+  const [getPng, { ref, isLoading }] = useCurrentPng();
+
+  const handleDownload = useCallback(async () => {
+    const png = await getPng();
+
+    if (png) {
+      saveAs(png, "AvgPriceVsYear.png");
+    }
+  }, [getPng]);
+
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
@@ -152,6 +165,7 @@ const LineChartComponent = () => {
         margin={{
           right: 30,
         }}
+        ref={ref}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
@@ -160,6 +174,14 @@ const LineChartComponent = () => {
         <Legend />
         <Line type="monotone" dataKey="price" stroke="#3b82f6" />
       </LineChart>
+      <div className="w-full flex justify-end">
+        <button
+          className="font-medium text-sm px-3 py-1  mb-5 bg-gray-600 hover:bg-gray-700 text-gray-400"
+          onClick={handleDownload}
+        >
+          {isLoading ? "Downloading..." : "Export Chart"}
+        </button>
+      </div>
     </ResponsiveContainer>
   );
 };
