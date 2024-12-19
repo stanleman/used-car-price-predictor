@@ -15,6 +15,7 @@ import {
 
 const LineChartComponent = () => {
   const [chartData, setChartData] = useState([]);
+  const [filter, setFilter] = useState("all");
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
@@ -26,34 +27,51 @@ const LineChartComponent = () => {
         Papa.parse(csv, {
           header: true,
           complete: (results) => {
-            const processedData = Object.values(
-              results.data
-                .map((item) => ({
-                  year: parseInt(item.years),
-                  price: parseFloat(item.prices),
-                }))
-                .filter((item) => !isNaN(item.price) && !isNaN(item.year))
-                .reduce((acc, item) => {
-                  if (!acc[item.year]) {
-                    acc[item.year] = {
-                      year: item.year,
-                      totalPrice: 0,
-                      count: 0,
-                    };
-                  }
-                  acc[item.year].totalPrice += item.price;
-                  acc[item.year].count += 1;
-                  return acc;
-                }, {})
+            let processedData = results.data
+              .map((item) => ({
+                year: parseInt(item.years),
+                price: parseFloat(item.prices),
+              }))
+              .filter((item) => !isNaN(item.price) && !isNaN(item.year));
+
+            if (filter === "fiveYears") {
+              processedData = processedData.filter(
+                (item) => currentYear - item.year <= 5
+              );
+            } else if (filter === "tenYears") {
+              processedData = processedData.filter(
+                (item) => currentYear - item.year <= 10
+              );
+            } else if (filter === "twentyYears") {
+              processedData = processedData.filter(
+                (item) => currentYear - item.year <= 20
+              );
+            }
+
+            const data = Object.values(
+              processedData.reduce((acc, item) => {
+                const yearsElapsed = currentYear - item.year;
+                if (!acc[yearsElapsed]) {
+                  acc[yearsElapsed] = {
+                    yearsElapsed: yearsElapsed,
+                    year: item.year,
+                    totalPrice: 0,
+                    count: 0,
+                  };
+                }
+                acc[yearsElapsed].totalPrice += item.price;
+                acc[yearsElapsed].count += 1;
+                return acc;
+              }, {})
             )
               .map((group) => ({
-                name: `${currentYear - group.year}y`,
+                name: `${group.yearsElapsed}y`,
                 year: group.year,
                 price: group.totalPrice / group.count,
               }))
               .sort((a, b) => b.year - a.year);
 
-            setChartData(processedData);
+            setChartData(data);
           },
         });
       } catch (error) {
@@ -62,11 +80,11 @@ const LineChartComponent = () => {
     };
 
     fetchCSV();
-  }, [currentYear]);
+  }, [filter, currentYear]);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
-      const { name, price } = payload[0].payload;
+      const { year, price } = payload[0].payload;
       return (
         <div
           style={{
@@ -78,7 +96,7 @@ const LineChartComponent = () => {
           }}
         >
           <p>
-            <strong>Years Elapsed:</strong> {name}
+            <strong>Year:</strong> {year}
           </p>
           <p>
             <strong>Avg Price:</strong> RM {price.toFixed(2)}
@@ -90,7 +108,45 @@ const LineChartComponent = () => {
   };
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="80%">
+      <div className="flex gap-2 items-center mb-1">
+        <button
+          onClick={() => setFilter("all")}
+          className={`font-medium rounded-lg text-sm px-5 py-2.5  mb-2 bg-blue-600/20 hover:bg-blue-700/20 text-gray-900 ${
+            filter == "all" ? "!bg-blue-600 hover:!bg-blue-700" : ""
+          }`}
+        >
+          All
+        </button>
+
+        <button
+          onClick={() => setFilter("fiveYears")}
+          className={`font-medium rounded-lg text-sm px-5 py-2.5  mb-2 bg-blue-600/20 hover:bg-blue-700/20 text-gray-900 ${
+            filter == "fiveYears" ? "!bg-blue-600 hover:!bg-blue-700" : ""
+          }`}
+        >
+          5 years
+        </button>
+
+        <button
+          onClick={() => setFilter("tenYears")}
+          className={`font-medium rounded-lg text-sm px-5 py-2.5  mb-2 bg-blue-600/20 hover:bg-blue-700/20 text-gray-900 ${
+            filter == "tenYears" ? "!bg-blue-600 hover:!bg-blue-700" : ""
+          }`}
+        >
+          10 years
+        </button>
+
+        <button
+          onClick={() => setFilter("twentyYears")}
+          className={`font-medium rounded-lg text-sm px-5 py-2.5  mb-2 bg-blue-600/20 hover:bg-blue-700/20 text-gray-900 ${
+            filter == "twentyYears" ? "!bg-blue-600 hover:!bg-blue-700" : ""
+          }`}
+        >
+          20 years
+        </button>
+      </div>
+
       <LineChart
         data={chartData}
         margin={{

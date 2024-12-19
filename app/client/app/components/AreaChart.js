@@ -15,6 +15,7 @@ import {
 
 const AreaChartComponent = () => {
   const [chartData, setChartData] = useState([]);
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     const fetchCSV = async () => {
@@ -25,32 +26,47 @@ const AreaChartComponent = () => {
         Papa.parse(csv, {
           header: true,
           complete: (results) => {
-            const processedData = Object.values(
-              results.data
-                .map((item) => ({
-                  engine_cc: parseInt(item.engine_ccs),
-                  price: parseFloat(item.prices),
-                }))
-                .filter((item) => !isNaN(item.price) && !isNaN(item.engine_cc))
-                .reduce((acc, item) => {
-                  const range = Math.floor(item.engine_cc / 1000) * 1000;
-                  if (!acc[range]) {
-                    acc[range] = {
-                      engine_cc_range: `${range}-${range + 999}`,
-                      totalPrice: 0,
-                      count: 0,
-                    };
-                  }
-                  acc[range].totalPrice += item.price;
-                  acc[range].count += 1;
-                  return acc;
-                }, {})
+            let processedData = results.data
+              .map((item) => ({
+                engine_cc: parseInt(item.engine_ccs),
+                price: parseFloat(item.prices),
+              }))
+              .filter((item) => !isNaN(item.price) && !isNaN(item.engine_cc));
+
+            if (filter === "filter1") {
+              processedData = processedData.filter(
+                (item) => item.engine_cc <= 1999
+              );
+            } else if (filter === "filter2") {
+              processedData = processedData.filter(
+                (item) => item.engine_cc <= 2999
+              );
+            } else if (filter === "filter3") {
+              processedData = processedData.filter(
+                (item) => item.engine_cc <= 4999
+              );
+            }
+
+            const data = Object.values(
+              processedData.reduce((acc, item) => {
+                const range = Math.floor(item.engine_cc / 1000) * 1000;
+                if (!acc[range]) {
+                  acc[range] = {
+                    engine_cc_range: `${range}-${range + 999}`,
+                    totalPrice: 0,
+                    count: 0,
+                  };
+                }
+                acc[range].totalPrice += item.price;
+                acc[range].count += 1;
+                return acc;
+              }, {})
             ).map((group) => ({
               name: group.engine_cc_range,
               price: group.totalPrice / group.count,
             }));
 
-            setChartData(processedData);
+            setChartData(data);
           },
         });
       } catch (error) {
@@ -59,7 +75,7 @@ const AreaChartComponent = () => {
     };
 
     fetchCSV();
-  }, []);
+  }, [filter]);
 
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -87,7 +103,45 @@ const AreaChartComponent = () => {
   };
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="80%">
+      <div className="flex gap-2 items-center mb-1">
+        <button
+          onClick={() => setFilter("all")}
+          className={`font-medium rounded-lg text-sm px-5 py-2.5  mb-2 bg-blue-600/20 hover:bg-blue-700/20 text-gray-900 ${
+            filter == "all" ? "!bg-blue-600 hover:!bg-blue-700" : ""
+          }`}
+        >
+          All
+        </button>
+
+        <button
+          onClick={() => setFilter("filter1")}
+          className={`font-medium rounded-lg text-sm px-5 py-2.5  mb-2 bg-blue-600/20 hover:bg-blue-700/20 text-gray-900 ${
+            filter == "filter1" ? "!bg-blue-600 hover:!bg-blue-700" : ""
+          }`}
+        >
+          0 - 1999 CC
+        </button>
+
+        <button
+          onClick={() => setFilter("filter2")}
+          className={`font-medium rounded-lg text-sm px-5 py-2.5  mb-2 bg-blue-600/20 hover:bg-blue-700/20 text-gray-900 ${
+            filter == "filter2" ? "!bg-blue-600 hover:!bg-blue-700" : ""
+          }`}
+        >
+          0 - 2999 CC
+        </button>
+
+        <button
+          onClick={() => setFilter("filter3")}
+          className={`font-medium rounded-lg text-sm px-5 py-2.5  mb-2 bg-blue-600/20 hover:bg-blue-700/20 text-gray-900 ${
+            filter == "filter3" ? "!bg-blue-600 hover:!bg-blue-700" : ""
+          }`}
+        >
+          0 - 4999 CC
+        </button>
+      </div>
+
       <AreaChart
         data={chartData}
         margin={{
