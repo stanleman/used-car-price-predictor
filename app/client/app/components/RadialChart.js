@@ -5,12 +5,9 @@ import Papa from "papaparse";
 import {
   RadialBarChart,
   RadialBar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 
 const RadialChartComponent = () => {
@@ -22,32 +19,41 @@ const RadialChartComponent = () => {
         const response = await fetch("/carlist_cleaned.csv");
         const csv = await response.text();
 
+        const colorMapping = {
+          Bronze: "#8B4513",
+        };
+
         Papa.parse(csv, {
           header: true,
           complete: (results) => {
             const processedData = Object.values(
               results.data
                 .map((item) => ({
-                  manufacturer: item.manufacturers,
+                  color: item.colors,
                   price: parseFloat(item.prices),
                 }))
-                .filter((item) => !isNaN(item.price) && item.manufacturer)
+                .filter((item) => !isNaN(item.price) && item.color)
                 .reduce((acc, item) => {
-                  if (!acc[item.manufacturer]) {
-                    acc[item.manufacturer] = {
-                      manufacturer: item.manufacturer,
+                  if (!acc[item.color]) {
+                    acc[item.color] = {
+                      color: item.color,
+                      totalPrice: 0,
                       count: 0,
                     };
                   }
-                  acc[item.manufacturer].count += 1;
+                  acc[item.color].totalPrice += item.price;
+                  acc[item.color].count += 1;
                   return acc;
                 }, {})
             )
               .map((group) => ({
-                name: group.manufacturer.toString(),
+                name: group.color,
+                totalPrice: group.totalPrice,
+                averagePrice: group.totalPrice / group.count,
                 count: group.count,
+                fill: colorMapping[group.color] || group.color,
               }))
-              .sort((a, b) => b.count - a.count);
+              .sort((a, b) => a.totalPrice - b.totalPrice);
 
             setChartData(processedData);
           },
@@ -60,39 +66,66 @@ const RadialChartComponent = () => {
     fetchCSV();
   }, []);
 
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <RadialBarChart
-        cx="50%"
-        cy="50%"
-        innerRadius="10%"
-        outerRadius="80%"
-        barSize={10}
-        data={chartData}
-      >
-        <RadialBar
-          minAngle={15}
-          label={{ position: "insideStart", fill: "#fff" }}
-          background
-          clockWise
-          dataKey="name"
-        />
-        {/* <Legend
-          iconSize={10}
-          layout="vertical"
-          verticalAlign="middle"
-          wrapperStyle={{
-            top: "50%",
-            right: 0,
-            transform: "translate(0, -50%)",
-            lineHeight: "24px",
+  const style = {
+    top: "50%",
+    right: 0,
+    transform: "translate(-130%, -50%)",
+    lineHeight: "24px",
+  };
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const { name, totalPrice } = payload[0].payload;
+      return (
+        <div
+          style={{
+            background: "#fff",
+            opacity: "0.9",
+            border: "1px solid #ccc",
+            padding: "10px",
+            borderRadius: "5px",
           }}
-        /> */}
-      </RadialBarChart>
-    </ResponsiveContainer>
+        >
+          <p>
+            <strong>Color:</strong> {name}
+          </p>
+          <p>
+            <strong>Total Price:</strong> RM {totalPrice.toFixed(0)}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <div className="w-full h-full">
+      <ResponsiveContainer>
+        <RadialBarChart
+          cx="50%"
+          cy="50%"
+          innerRadius="5%"
+          outerRadius="90%"
+          barSize={20}
+          data={chartData}
+        >
+          <RadialBar
+            minAngle={15}
+            background={{ fill: "#dddddd" }}
+            clockWise
+            dataKey="totalPrice"
+          />
+          <Tooltip content={<CustomTooltip />} />
+          {/* <Legend
+            iconSize={10}
+            layout="vertical"
+            verticalAlign="middle"
+            wrapperStyle={style}
+          /> */}
+        </RadialBarChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
-
-// change return
 
 export default RadialChartComponent;

@@ -15,6 +15,7 @@ import {
 
 const LineChartComponent = () => {
   const [chartData, setChartData] = useState([]);
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const fetchCSV = async () => {
@@ -44,10 +45,13 @@ const LineChartComponent = () => {
                   acc[item.year].count += 1;
                   return acc;
                 }, {})
-            ).map((group) => ({
-              name: group.year.toString(),
-              price: group.totalPrice / group.count,
-            }));
+            )
+              .map((group) => ({
+                name: `${currentYear - group.year}y`,
+                year: group.year,
+                price: group.totalPrice / group.count,
+              }))
+              .sort((a, b) => b.year - a.year);
 
             setChartData(processedData);
           },
@@ -58,7 +62,32 @@ const LineChartComponent = () => {
     };
 
     fetchCSV();
-  }, []);
+  }, [currentYear]);
+
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const { name, price } = payload[0].payload;
+      return (
+        <div
+          style={{
+            background: "#fff",
+            opacity: "0.9",
+            border: "1px solid #ccc",
+            padding: "10px",
+            borderRadius: "5px",
+          }}
+        >
+          <p>
+            <strong>Years Elapsed:</strong> {name}
+          </p>
+          <p>
+            <strong>Avg Price:</strong> RM {price.toFixed(2)}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -71,7 +100,7 @@ const LineChartComponent = () => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
-        <Tooltip />
+        <Tooltip content={<CustomTooltip />} />
         <Legend />
         <Line type="monotone" dataKey="price" stroke="#3b82f6" />
       </LineChart>

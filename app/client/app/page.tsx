@@ -76,11 +76,11 @@ export default function Home() {
               </ul>
 
               <p>
-                The predictive model demonstrates high accuracy, with an
-                R-squared value of 0.964 indicating that 96.4% of price variance
-                is explained by the model. The Mean Squared Error of
-                619,318,449.86 suggests an average prediction deviation of
-                approximately RM 24,886.
+                The predictive model has a high accuracy, with an R-squared
+                value of 0.964 indicating that 96.4% of price variance is
+                explained by the model. The Mean Squared Error of 619,318,449.86
+                suggests an average prediction deviation of approximately RM
+                24,886.
               </p>
             </div>
           </DialogContent>

@@ -61,6 +61,31 @@ const AreaChartComponent = () => {
     fetchCSV();
   }, []);
 
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      const { name, price } = payload[0].payload;
+      return (
+        <div
+          style={{
+            background: "#fff",
+            opacity: "0.9",
+            border: "1px solid #ccc",
+            padding: "10px",
+            borderRadius: "5px",
+          }}
+        >
+          <p>
+            <strong>Engine CC:</strong> {name}
+          </p>
+          <p>
+            <strong>Avg Price:</strong> RM {price.toFixed(2)}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart
@@ -72,7 +97,7 @@ const AreaChartComponent = () => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
-        <Tooltip />
+        <Tooltip content={<CustomTooltip />} />
         <Legend />
         <Area type="monotone" dataKey="price" stroke="#3b82f6" fill="#8884d8" />
       </AreaChart>

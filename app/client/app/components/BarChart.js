@@ -36,18 +36,20 @@ const BarChartComponent = () => {
                   if (!acc[item.manufacturer]) {
                     acc[item.manufacturer] = {
                       manufacturer: item.manufacturer,
+                      totalPrice: 0,
                       count: 0,
                     };
                   }
+                  acc[item.manufacturer].totalPrice += item.price;
                   acc[item.manufacturer].count += 1;
                   return acc;
                 }, {})
             )
               .map((group) => ({
                 name: group.manufacturer.toString(),
-                count: group.count,
+                price: group.totalPrice / group.count,
               }))
-              .sort((a, b) => b.count - a.count);
+              .sort((a, b) => a.price - b.price);
 
             setChartData(processedData);
           },
@@ -60,6 +62,32 @@ const BarChartComponent = () => {
     fetchCSV();
   }, []);
 
+  const CustomTooltip = ({ active, payload }) => {
+    if (active && payload && payload.length) {
+      console.log(payload[0].payload);
+      const { name, price } = payload[0].payload;
+      return (
+        <div
+          style={{
+            background: "#fff",
+            opacity: "0.9",
+            border: "1px solid #ccc",
+            padding: "10px",
+            borderRadius: "5px",
+          }}
+        >
+          <p>
+            <strong>Manufacturer:</strong> {name}
+          </p>
+          <p>
+            <strong>Avg Price:</strong>RM {price.toFixed(2)}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
@@ -71,11 +99,11 @@ const BarChartComponent = () => {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" />
         <YAxis />
-        <Tooltip />
+        <Tooltip content={<CustomTooltip />} />
         <Legend />
         <Bar
           type="monotone"
-          dataKey="count"
+          dataKey="price"
           stackId="a"
           stroke="#3b82f6"
           fill="#8884d8"
