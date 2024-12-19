@@ -176,7 +176,7 @@ const LineChartComponent = () => {
       </LineChart>
       <div className="w-full flex justify-end">
         <button
-          className="font-medium text-sm px-3 py-1  mb-5 bg-gray-600 hover:bg-gray-700 text-gray-400"
+          className="font-medium text-sm px-3 py-1  mb-5 bg-gray-600 hover:bg-gray-700 text-gray-400 hover:text-gray-300"
           onClick={handleDownload}
         >
           {isLoading ? "Downloading..." : "Export Chart"}
