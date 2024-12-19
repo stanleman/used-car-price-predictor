@@ -24,9 +24,6 @@ export default function Home() {
     )
   );
 
-  console.log(Object.keys(features).length);
-  console.log(features);
-
   const [predictedPrice, setPredictedPrice] = useState<PredictedPrice | null>(
     null
   );
