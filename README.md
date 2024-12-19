@@ -1,7 +1,9 @@
 This dashboard is built with NextJS with Python Flask as the backend.
 
 ## Notebook and model
-Go to the notebook and run the first cell (to import the libraries). You may need to ```pip install``` some of the libraries.
+Run the following code to get the dependencies needed: ```pip install pandas numpy matplotlib seaborn re selenium scikit-learn joblib```
+
+ Go to the notebook and run the first cell (to import the libraries). 
 
 Afterwards, run everything starting from **Data Preprocessing** to clean the data, get the exploratory data analysis and train the model needed for the app to run.
 
